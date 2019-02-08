@@ -2,4 +2,5 @@
 
 export(get_all_commits)
 export(get_single_commit)
+export(get_single_commit_as_chunks)
 importFrom(magrittr,"%>%")
