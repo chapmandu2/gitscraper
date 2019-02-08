@@ -29,7 +29,7 @@ get_single_commit_as_chunks <- function(git_repo, commit_id = 10) {
                   cumul_fn = cumsum(is_fn)) %>%
     dplyr::filter(cumul_fn > 0)  %>%
     dplyr::group_by(cumul_fn) %>%
-    dplyr::mutate(filename = max(fn, na.rm = TRUE)) %>%
+    dplyr::mutate(filename = as.character(max(fn, na.rm = TRUE))) %>%
     dplyr::ungroup() %>%
     dplyr::filter(is_code_add, !is_fn) %>%
     dplyr::transmute(line_no, chunk=cumul_chunk, code, filename)
