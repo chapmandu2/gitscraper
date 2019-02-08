@@ -45,7 +45,8 @@ get_single_commit_as_chunks <- function(git_repo, commit_id = 10) {
                       author_email = this_commit$author$email,
                       commit_summary = this_commit$summary,
                       commit_time = lubridate::as_datetime(as.character(this_commit$author$when)),
-                      filename, chunk, code) %>%
+                      repo = gsub('^(.*)/', '', git_repo),
+                     filename, chunk, code) %>%
     dplyr::mutate(code_length = base::nchar(code)) %>%
     dplyr::filter(code_length > 2)
 
