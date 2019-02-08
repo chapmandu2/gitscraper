@@ -29,13 +29,13 @@ get_single_commit_as_chunks <- function(git_repo, commit_id = 10) {
                   cumul_fn = cumsum(is_fn)) %>%
     dplyr::filter(cumul_fn > 0)  %>%
     dplyr::group_by(cumul_fn) %>%
-    dplyr::mutate(filename = as.character(max(fn, na.rm = TRUE))) %>%
+    dplyr::mutate(filename = dplyr::first(fn, order_by = 'line_no')) %>%
     dplyr::ungroup() %>%
     dplyr::filter(is_code_add, !is_fn) %>%
     dplyr::transmute(line_no, chunk=cumul_chunk, code, filename)
 
   chunks_df <- code_df %>%
-    dplyr::group_by(filename, chunk) %>%
+    dplyr::group_by(filename) %>%
     dplyr::summarise(code = paste(code, collapse='\n')) %>%
     dplyr::ungroup()
 
@@ -46,7 +46,8 @@ get_single_commit_as_chunks <- function(git_repo, commit_id = 10) {
                       commit_summary = this_commit$summary,
                       commit_time = lubridate::as_datetime(as.character(this_commit$author$when)),
                       repo = gsub('^(.*)/', '', git_repo),
-                     filename, chunk, code) %>%
+                     filetype = gsub(pattern = '^(.*)\\.', replacement='', filename),
+                     filename, code) %>%
     dplyr::mutate(code_length = base::nchar(code)) %>%
     dplyr::filter(code_length > 2)
 
